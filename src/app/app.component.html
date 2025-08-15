@@ -1,0 +1,48 @@
+<div class="container">
+  <h1>Mini one-page prodavnica</h1>
+
+  <!-- Toggle data source -->
+  <div class="toggle-source">
+    <label>
+      <input type="checkbox" [(ngModel)]="useBackend" (change)="toggleDataSource()" />
+      Koristi Java Spring backend
+    </label>
+  </div>
+
+  <div class="main-layout">
+    <div class="products">
+      <h2>Proizvodi</h2>
+      <div *ngIf="!hasProducts">Nema proizvoda</div>
+      <div class="product-grid">
+        <div *ngFor="let p of products" class="product-card">
+          <strong>{{ p.name }}</strong>
+          <div class="product-desc">{{ p.description }}</div>
+          <div class="product-price">
+            {{ p.price | currency : "RSD" : "symbol" : "1.2-2" }}
+          </div>
+          <div *ngIf="p.stock != null" class="stock">
+            Na stanju: {{ p.stock }}
+          </div>
+          <div class="btn-add">
+            <button (click)="addToCart(p)" [disabled]="p.stock === 0">
+              Dodaj u korpu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-cart
+      [products]="products"
+      [cart]="cart"
+      [showRaw]="showRaw"
+      [isCartEmpty]="isCartEmpty"
+      [checkoutMessage]="checkoutMessage"
+      (checkout)="onCheckout()"
+      (resetCart)="onResetCart()"
+      (changeQty)="onChangeQty($event)"
+      (removeFromCart)="onRemoveFromCart($event)"
+      (toggleRaw)="onToggleRaw()"
+    ></app-cart>
+  </div>
+</div>

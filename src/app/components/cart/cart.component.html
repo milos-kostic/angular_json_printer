@@ -1,0 +1,43 @@
+<div class="cart">
+  <h2>Korpa</h2>
+  <div *ngIf="isCartEmpty">Korpa je prazna</div>
+
+  <div *ngFor="let item of cartItems()" class="cart-item">
+    <div><strong>{{ item.name }}</strong></div>
+    <div>
+      {{ item.price | currency : "RSD" : "symbol" : "1.2-2" }} × {{ item.qty }} =
+      {{ item.lineTotal | currency : "RSD" : "symbol" : "1.2-2" }}
+    </div>
+    <div class="cart-btns">
+      <button (click)="changeQty.emit({ id: item.id, delta: -1 })">−</button>
+      <button (click)="changeQty.emit({ id: item.id, delta: +1 })">+</button>
+      <button (click)="removeFromCart.emit(item.id)">Ukloni</button>
+    </div>
+  </div>
+
+  <div *ngIf="!isCartEmpty" class="total">
+    Total: {{ total() | currency : "RSD" : "symbol" : "1.2-2" }}
+  </div>
+
+  <div class="cart-actions">
+    <button (click)="checkout.emit()" [disabled]="isCartEmpty">Plati</button>
+    <button (click)="resetCart.emit()" [disabled]="isCartEmpty">Obriši</button>
+  </div>
+
+  <div *ngIf="checkoutMessage" class="checkout-msg">
+    {{ checkoutMessage }}
+  </div>
+
+  <div class="raw-json-toggle">
+    <button (click)="toggleRaw.emit()">
+      {{ showRaw ? "Sakrij" : "Prikaži" }} JSON
+    </button>
+  </div>
+
+  <div *ngIf="showRaw" class="raw-json">
+    <h3>Proizvodi JSON</h3>
+    <pre>{{ products | json }}</pre>
+    <h3>Korpa JSON</h3>
+    <pre>{{ cart | json }}</pre>
+  </div>
+</div>

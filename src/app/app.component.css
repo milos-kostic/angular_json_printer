@@ -1,0 +1,88 @@
+/* app.component.css */
+.container {
+  max-width: 1000px;
+  margin: 20px auto;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.main-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.products {
+  flex: 2;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.product-desc {
+  margin-top: 4px;
+  color: #333;
+}
+
+.product-price {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.stock {
+  font-size: 12px;
+  color: gray;
+}
+
+.btn-add {
+  margin-top: 8px;
+}
+
+.cart {
+  flex: 1;
+  border-left: 1px solid #eee;
+  padding-left: 16px;
+}
+
+.cart-item {
+  margin-bottom: 10px;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 6px;
+}
+
+.cart-btns {
+  margin-top: 6px;
+}
+
+.total {
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+.cart-actions {
+  margin-top: 12px;
+}
+
+.raw-json-toggle {
+  margin-top: 16px;
+}
+
+.raw-json {
+  margin-top: 12px;
+}
+
+.checkout-msg {
+  background: #d4edda;
+  color: #155724;
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
