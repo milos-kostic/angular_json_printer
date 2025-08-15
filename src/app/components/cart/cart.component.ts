@@ -12,9 +12,9 @@ import { Product, CartItem } from '../../product.types';
 export class CartComponent {
   @Input() products: Product[] = [];
   @Input() cart: { id: number; qty: number }[] = [];
-  @Input() showRaw: boolean = false;
-  @Input() isCartEmpty: boolean = true;
-  @Input() checkoutMessage: string = '';
+  @Input() showRaw = false;
+  @Input() isCartEmpty = true;
+  @Input() checkoutMessage = '';
 
   @Output() checkout = new EventEmitter<void>();
   @Output() resetCart = new EventEmitter<void>();
@@ -22,18 +22,18 @@ export class CartComponent {
   @Output() removeFromCart = new EventEmitter<number>();
   @Output() toggleRaw = new EventEmitter<void>();
 
-  cartItems(): CartItem[] {
+  get cartItems(): CartItem[] {
     return this.cart.map(item => {
-      const product = this.products.find(p => p.id === item.id);
+      const product = this.products.find(p => p.id === item.id)!;
       return {
-        ...product!,
+        ...product,
         qty: item.qty,
-        lineTotal: product!.price * item.qty
+        lineTotal: product.price * item.qty
       };
     });
   }
 
-  total(): number {
-    return this.cartItems().reduce((sum, item) => sum + item.lineTotal, 0);
+  get total(): number {
+    return this.cartItems.reduce((sum, item) => sum + item.lineTotal, 0);
   }
 }

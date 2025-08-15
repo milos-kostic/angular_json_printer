@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from './services/product.service';
 import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms'; //  
+import { FormsModule } from '@angular/forms';
 import { CartComponent } from './components/cart/cart.component';
 import { Product } from './product.types';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NgIf, NgFor, CurrencyPipe, FormsModule, CartComponent],  
+  imports: [NgIf, NgFor, CurrencyPipe, FormsModule, HttpClientModule, CartComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -16,8 +17,8 @@ export class AppComponent implements OnInit {
   products: Product[] = [];
   cart: { id: number; qty: number }[] = [];
   showRaw = false;
-  checkoutMessage: string = '';
-  useBackend = false; //  default to local JSON
+  checkoutMessage = '';
+  useBackend = false;
 
   constructor(private productService: ProductService) {}
 
@@ -25,23 +26,27 @@ export class AppComponent implements OnInit {
     this.loadProducts();
   }
 
-  get isCartEmpty(): boolean {
+  isCartEmpty(): boolean {
     return this.cart.length === 0;
   }
 
-  get hasProducts(): boolean {
+  hasProducts(): boolean {
     return this.products.length > 0;
+  }
+
+  hasStock(product: Product): boolean {
+    return product.stock != null && product.stock > 0;
   }
 
   loadProducts() {
     if (this.useBackend) {
       this.productService.getProductsFromBackend().subscribe({
-        next: (data) => (this.products = data),
+        next: (data: Product[]) => this.products = data,
         error: (err) => console.error(err)
       });
     } else {
       this.productService.getProductsFromLocal().subscribe({
-        next: (data) => (this.products = data),
+        next: (data: Product[]) => this.products = data,
         error: (err) => console.error(err)
       });
     }
@@ -63,7 +68,7 @@ export class AppComponent implements OnInit {
   onCheckout() {
     this.checkoutMessage = 'Plaćanje uspešno!';
     this.cart = [];
-    setTimeout(() => (this.checkoutMessage = ''), 4000);
+    setTimeout(() => this.checkoutMessage = '', 3000);
   }
 
   onResetCart() {

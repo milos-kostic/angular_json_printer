@@ -2,7 +2,7 @@
   <h2>Korpa</h2>
   <div *ngIf="isCartEmpty">Korpa je prazna</div>
 
-  <div *ngFor="let item of cartItems()" class="cart-item">
+  <div *ngFor="let item of cartItems" class="cart-item">
     <div><strong>{{ item.name }}</strong></div>
     <div>
       {{ item.price | currency : "RSD" : "symbol" : "1.2-2" }} × {{ item.qty }} =
@@ -16,7 +16,7 @@
   </div>
 
   <div *ngIf="!isCartEmpty" class="total">
-    Total: {{ total() | currency : "RSD" : "symbol" : "1.2-2" }}
+    Total: {{ total | currency : "RSD" : "symbol" : "1.2-2" }}
   </div>
 
   <div class="cart-actions">
