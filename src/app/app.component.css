@@ -1,6 +1,6 @@
-/* === Cart section === */
 .cart {
-  flex: 1;
+  width: 320px;
+  flex: 0 0 320px;
   border-left: 1px solid #eee;
   padding: 16px;
   background-color: #f9f9f9;
@@ -60,7 +60,6 @@
   text-align: center;
 }
 
-/* === Layout === */
 .container {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -73,7 +72,7 @@
 }
 
 .products {
-  flex: 2;
+  flex: 1;
 }
 
 .product-grid {
@@ -135,7 +134,6 @@
   cursor: not-allowed;
 }
 
-/* === Controls === */
 .controls {
   margin: 1rem 0;
   display: flex;
@@ -145,20 +143,20 @@
 }
 
 .controls input[type="text"] {
+  width: 200px;
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 6px;
-  flex: 1;
 }
 
 .controls select {
+  width: 150px;
   padding: 0.4rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   background: #fff;
 }
 
-/* === No results / no products message === */
 .no-products {
   margin: 2rem 0;
   font-size: 1rem;

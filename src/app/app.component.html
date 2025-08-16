@@ -8,7 +8,6 @@
     </label>
   </div>
 
-  <!-- 🔎 Filter + Sorting controls -->
   <div class="controls">
     <input type="text" placeholder="Pretraži proizvode..." [(ngModel)]="filterText" />
 
@@ -31,10 +30,8 @@
     <div class="products">
       <h2>Proizvodi</h2>
 
-      <!-- 🚫 No products at all -->
       <div *ngIf="!hasProducts()" class="no-products">Nema proizvoda</div>
 
-      <!-- 🚫 Filter returned empty -->
       <div *ngIf="hasProducts() && filteredProducts.length === 0" class="no-products">
         Nema rezultata za pretragu
       </div>
@@ -46,11 +43,12 @@
           <div class="product-price">
             {{ p.price | currency : "RSD" : "symbol" : "1.2-2" }}
           </div>
-          <div *ngIf="hasStock(p)" class="stock">
-            Na stanju: {{ p.stock }}
+          <div *ngIf="availableStock(p) > 0" class="stock">
+            Na stanju: {{ availableStock(p) }}
           </div>
+          <div *ngIf="availableStock(p) === 0" class="stock">Nema na stanju</div>
           <div class="btn-add">
-            <button (click)="addToCart(p)" [disabled]="!hasStock(p)">
+            <button (click)="addToCart(p)" [disabled]="availableStock(p) === 0">
               Dodaj u korpu
             </button>
           </div>

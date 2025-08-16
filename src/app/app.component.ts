@@ -20,7 +20,6 @@ export class AppComponent implements OnInit {
   checkoutMessage = '';
   useBackend = false;
 
-  // 🔎 filtering & sorting
   filterText = '';
   sortBy: 'name' | 'price' = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -33,8 +32,6 @@ export class AppComponent implements OnInit {
 
   get filteredProducts(): Product[] {
     let result = [...this.products];
-
-    // 🔎 filter
     if (this.filterText.trim()) {
       const lower = this.filterText.toLowerCase();
       result = result.filter(p =>
@@ -42,8 +39,6 @@ export class AppComponent implements OnInit {
         p.description.toLowerCase().includes(lower)
       );
     }
-
-    // ↕ sort
     result.sort((a, b) => {
       let cmp = 0;
       if (this.sortBy === 'name') {
@@ -53,7 +48,6 @@ export class AppComponent implements OnInit {
       }
       return this.sortDirection === 'asc' ? cmp : -cmp;
     });
-
     return result;
   }
 
@@ -65,8 +59,17 @@ export class AppComponent implements OnInit {
     return this.products.length > 0;
   }
 
+  getCartQty(productId: number): number {
+    const item = this.cart.find(c => c.id === productId);
+    return item ? item.qty : 0;
+  }
+
+  availableStock(product: Product): number {
+    return Math.max(0, product.stock - this.getCartQty(product.id));
+  }
+
   hasStock(product: Product): boolean {
-    return product.stock != null && product.stock > 0;
+    return this.availableStock(product) > 0;
   }
 
   loadProducts() {
@@ -88,15 +91,24 @@ export class AppComponent implements OnInit {
   }
 
   addToCart(product: Product) {
+    if (this.availableStock(product) <= 0) return;
     const item = this.cart.find(c => c.id === product.id);
     if (item) {
-      item.qty++;
+      if (item.qty < product.stock) {
+        item.qty++;
+      }
     } else {
       this.cart.push({ id: product.id, qty: 1 });
     }
   }
 
   onCheckout() {
+    for (const item of this.cart) {
+      const product = this.products.find(p => p.id === item.id);
+      if (product) {
+        product.stock = Math.max(0, product.stock - item.qty);
+      }
+    }
     this.checkoutMessage = 'Plaćanje uspešno!';
     this.cart = [];
     setTimeout(() => this.checkoutMessage = '', 3000);
@@ -107,13 +119,20 @@ export class AppComponent implements OnInit {
   }
 
   onChangeQty(event: { id: number; delta: number }) {
+    const product = this.products.find(p => p.id === event.id);
     const item = this.cart.find(c => c.id === event.id);
-    if (item) {
-      item.qty += event.delta;
-      if (item.qty <= 0) {
-        this.cart = this.cart.filter(c => c.id !== event.id);
-      }
+    if (!product || !item) return;
+
+    const nextQty = item.qty + event.delta;
+    if (nextQty <= 0) {
+      this.cart = this.cart.filter(c => c.id !== event.id);
+      return;
     }
+    if (nextQty > product.stock) {
+      item.qty = product.stock;
+      return;
+    }
+    item.qty = nextQty;
   }
 
   onRemoveFromCart(id: number) {
