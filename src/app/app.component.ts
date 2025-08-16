@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from './services/product.service';
+import { CartService } from './services/cart.service';
 import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartComponent } from './components/cart/cart.component';
@@ -20,10 +21,14 @@ export class AppComponent implements OnInit {
   checkoutMessage = '';
   useBackend = false;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private cartService: CartService
+  ) {}
 
   ngOnInit() {
     this.loadProducts();
+    this.cartService.cart$.subscribe(cart => this.cart = cart);
   }
 
   isCartEmpty(): boolean {
@@ -57,36 +62,25 @@ export class AppComponent implements OnInit {
   }
 
   addToCart(product: Product) {
-    const item = this.cart.find(c => c.id === product.id);
-    if (item) {
-      item.qty++;
-    } else {
-      this.cart.push({ id: product.id, qty: 1 });
-    }
+    this.cartService.addToCart(product);
   }
 
   onCheckout() {
     this.checkoutMessage = 'Plaćanje uspešno!';
-    this.cart = [];
+    this.cartService.resetCart();
     setTimeout(() => this.checkoutMessage = '', 3000);
   }
 
   onResetCart() {
-    this.cart = [];
+    this.cartService.resetCart();
   }
 
   onChangeQty(event: { id: number; delta: number }) {
-    const item = this.cart.find(c => c.id === event.id);
-    if (item) {
-      item.qty += event.delta;
-      if (item.qty <= 0) {
-        this.cart = this.cart.filter(c => c.id !== event.id);
-      }
-    }
+    this.cartService.changeQty(event.id, event.delta);
   }
 
   onRemoveFromCart(id: number) {
-    this.cart = this.cart.filter(c => c.id !== id);
+    this.cartService.removeFromCart(id);
   }
 
   onToggleRaw() {
