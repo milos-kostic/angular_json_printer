@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from './services/product.service';
-import { CartService } from './services/cart.service';
 import { NgIf, NgFor, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartComponent } from './components/cart/cart.component';
@@ -21,14 +20,41 @@ export class AppComponent implements OnInit {
   checkoutMessage = '';
   useBackend = false;
 
-  constructor(
-    private productService: ProductService,
-    private cartService: CartService
-  ) {}
+  // 🔎 filtering & sorting
+  filterText = '';
+  sortBy: 'name' | 'price' = 'name';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  constructor(private productService: ProductService) {}
 
   ngOnInit() {
     this.loadProducts();
-    this.cartService.cart$.subscribe(cart => this.cart = cart);
+  }
+
+  get filteredProducts(): Product[] {
+    let result = [...this.products];
+
+    // 🔎 filter
+    if (this.filterText.trim()) {
+      const lower = this.filterText.toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(lower) ||
+        p.description.toLowerCase().includes(lower)
+      );
+    }
+
+    // ↕ sort
+    result.sort((a, b) => {
+      let cmp = 0;
+      if (this.sortBy === 'name') {
+        cmp = a.name.localeCompare(b.name);
+      } else if (this.sortBy === 'price') {
+        cmp = a.price - b.price;
+      }
+      return this.sortDirection === 'asc' ? cmp : -cmp;
+    });
+
+    return result;
   }
 
   isCartEmpty(): boolean {
@@ -62,25 +88,36 @@ export class AppComponent implements OnInit {
   }
 
   addToCart(product: Product) {
-    this.cartService.addToCart(product);
+    const item = this.cart.find(c => c.id === product.id);
+    if (item) {
+      item.qty++;
+    } else {
+      this.cart.push({ id: product.id, qty: 1 });
+    }
   }
 
   onCheckout() {
     this.checkoutMessage = 'Plaćanje uspešno!';
-    this.cartService.resetCart();
+    this.cart = [];
     setTimeout(() => this.checkoutMessage = '', 3000);
   }
 
   onResetCart() {
-    this.cartService.resetCart();
+    this.cart = [];
   }
 
   onChangeQty(event: { id: number; delta: number }) {
-    this.cartService.changeQty(event.id, event.delta);
+    const item = this.cart.find(c => c.id === event.id);
+    if (item) {
+      item.qty += event.delta;
+      if (item.qty <= 0) {
+        this.cart = this.cart.filter(c => c.id !== event.id);
+      }
+    }
   }
 
   onRemoveFromCart(id: number) {
-    this.cartService.removeFromCart(id);
+    this.cart = this.cart.filter(c => c.id !== id);
   }
 
   onToggleRaw() {
