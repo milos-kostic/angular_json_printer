@@ -8,12 +8,39 @@
     </label>
   </div>
 
+  <!-- 🔎 Filter + Sorting controls -->
+  <div class="controls">
+    <input type="text" placeholder="Pretraži proizvode..." [(ngModel)]="filterText" />
+
+    <label>Sortiraj po:
+      <select [(ngModel)]="sortBy">
+        <option value="name">Naziv</option>
+        <option value="price">Cena</option>
+      </select>
+    </label>
+
+    <label>Smer:
+      <select [(ngModel)]="sortDirection">
+        <option value="asc">Rastuće</option>
+        <option value="desc">Opadajuće</option>
+      </select>
+    </label>
+  </div>
+
   <div class="main-layout">
     <div class="products">
       <h2>Proizvodi</h2>
-      <div *ngIf="!hasProducts()">Nema proizvoda</div>
-      <div class="product-grid" *ngIf="hasProducts()">
-        <div *ngFor="let p of products" class="product-card">
+
+      <!-- 🚫 No products at all -->
+      <div *ngIf="!hasProducts()" class="no-products">Nema proizvoda</div>
+
+      <!-- 🚫 Filter returned empty -->
+      <div *ngIf="hasProducts() && filteredProducts.length === 0" class="no-products">
+        Nema rezultata za pretragu
+      </div>
+
+      <div class="product-grid" *ngIf="filteredProducts.length > 0">
+        <div *ngFor="let p of filteredProducts" class="product-card">
           <strong>{{ p.name }}</strong>
           <div class="product-desc">{{ p.description }}</div>
           <div class="product-price">
